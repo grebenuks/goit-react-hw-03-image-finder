@@ -112,6 +112,7 @@ img {
   outline: none;
   padding-left: 4px;
   padding-right: 4px;
+  line-height: 1.2;
 }
 
 .SearchFormInput::placeholder {
@@ -205,4 +206,11 @@ img {
 .Button:hover,
 .Button:focus {
   background-color: #303f9f;
+}
+
+.BtnWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 0;
 }

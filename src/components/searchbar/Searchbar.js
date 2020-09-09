@@ -19,7 +19,10 @@ export function Searchbar({ getSearch }) {
         <input
           className={styles.SearchFormInput}
           type="text"
+          autoComplete="off"
+          autoFocus
           name="search"
+          placeholder="Search images and photos"
         ></input>
       </form>
     </header>

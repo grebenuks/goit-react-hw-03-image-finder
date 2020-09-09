@@ -2,11 +2,16 @@ import React from 'react';
 import { ImageGalleryItem } from '../imageGalleryItem/ImageGalleryItem';
 import styles from '../../styles.module.css';
 
-export function ImageGallery({ gallery }) {
+export function ImageGallery({ fetchImages, gallery, toggleModal }) {
   return (
     <ul className={styles.ImageGallery}>
       {gallery.map(imageObj => (
-        <ImageGalleryItem imageObj={imageObj} key={imageObj.id} />
+        <ImageGalleryItem
+          fetchImages={fetchImages}
+          toggleModal={toggleModal}
+          imageObj={imageObj}
+          key={imageObj.id}
+        />
       ))}
     </ul>
   );

@@ -1,10 +1,10 @@
 import React from 'react';
 import { Searchbar } from './searchbar/Searchbar';
 import { ImageGallery } from './imageGallery/ImageGallery';
-// import { ImageGalleryItem } from './imageGalleryItem/ImageGalleryItem';
-// import {Loader} from './loader/Loader';
-// import {Button} from './button/Button';
-// import {Modal} from './modal/Modal';
+
+import { Spinner } from './Spinner/Spinner';
+import { Button } from './button/Button';
+import { Modal } from './modal/Modal';
 import styles from '../styles.module.css';
 
 import axios from 'axios';
@@ -15,20 +15,11 @@ export default class App extends React.Component {
   state = {
     gallery: [],
     search: '',
-    page: '',
-  };
-
-  getImages = async search => {
-    try {
-      const gallery = await axios.get(
-        `/?q=${search}&page=${
-          this.state.page
-        }&key=${'17952802-daa7906d75026c0e61ecd1623'}&image_type=photo&orientation=horizontal&per_page=12`,
-      );
-      this.setState({ gallery: gallery.data.hits });
-    } catch (error) {
-      console.log(error);
-    }
+    page: 1,
+    error: null,
+    showModal: false,
+    loading: false,
+    originalImageURL: '',
   };
 
   componentDidMount() {
@@ -43,15 +34,67 @@ export default class App extends React.Component {
     }
   }
 
+  getImages = () => {
+    this.setState({ loading: true });
+
+    axios
+      .get(
+        `/?q=${this.state.search}&page=${this.state.page}&key=${process.env.REACT_APP_API_KEY}&image_type=photo&orientation=horizontal&per_page=12`,
+      )
+      .then(response => {
+        this.setState(prevState => ({
+          gallery: [...prevState.gallery, ...response.data.hits],
+          loading: false,
+          page: prevState.page + 1,
+        }));
+      })
+      .finally(() => {
+        this.setState({ loading: false });
+
+        window.scrollTo({
+          top: document.documentElement.scrollHeight,
+          behavior: 'smooth',
+        });
+      });
+  };
+
   getSearch = search => {
-    this.setState({ search });
+    this.setState({ search, gallery: [], page: 1 });
+  };
+
+  toggleModal = () => {
+    this.setState(({ ShowModal }) => ({ showModal: !ShowModal }));
+  };
+
+  hiddenModal = () => {
+    this.setState({ showModal: false });
+  };
+
+  fetchImages = url => {
+    this.setState({ originalImageURL: url });
   };
 
   render() {
+    const { originalImageURL, loading, gallery, showModal } = this.state;
+
     return (
       <div className={styles.App}>
         <Searchbar getSearch={this.getSearch} />
-        <ImageGallery gallery={this.state.gallery} />
+        <ImageGallery
+          fetchImages={this.fetchImages}
+          toggleModal={this.toggleModal}
+          gallery={gallery}
+        />
+        {loading && <Spinner />}
+        {gallery.length > 0 && !loading && (
+          <Button getImages={this.getImages} />
+        )}
+        {showModal && (
+          <Modal
+            hiddenModal={this.hiddenModal}
+            largeImageURL={originalImageURL}
+          />
+        )}
       </div>
     );
   }
