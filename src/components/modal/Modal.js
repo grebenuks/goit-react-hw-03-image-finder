@@ -2,8 +2,10 @@ import React from 'react';
 import styles from '../../styles.module.css';
 
 export function Modal({ hiddenModal, largeImageURL }) {
-  const handleClick = () => {
-    hiddenModal();
+  const handleClick = e => {
+    if (e.currentTarget === e.target) {
+      hiddenModal();
+    }
   };
   return (
     <div className={styles.Overlay} onClick={handleClick}>
